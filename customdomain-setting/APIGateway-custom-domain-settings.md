@@ -7,6 +7,10 @@ paginate: true
 headingDivider: 1
 -->
 <style>
+  h2, h3, h4, h5, header, footer {
+    color: black;
+  }
+
   section.title {
     justify-content: center;
     text-align: left;
@@ -23,6 +27,8 @@ headingDivider: 1
 3. カスタムドメイン設定
 4. CloudFront（Route53）設定
 5. APIマッピング
+6. 具体例
+
 
 # 目標
 ## 独自ドメインを利用して、複数APIGatewayへのルーティングを設定したい
@@ -127,3 +133,36 @@ APIGateway1にxxxステージを追加してbbbのAPIをテストしたい場合
 
 で別APIとして検証（バージョンアップ）することも可能。
 </span>
+
+
+# 具体例1
+## 1API Gatewayに複数ステージがある場合
+A社が提供するAPIのバージョンアップを行う。
+つまり、同一API Gatewayでステージ切り替えによって、商用・検証用を分ける使い方。
+
+<span style="font-size:24px">
+
+|対象API|パス|API|ステージ|アクセスURL|
+|:--|:--|:--|:--|:--|
+|提供中API（aaa）|/api|APIGateway1|prd|APItest.customdomain.com/api/aaa|
+|検証中API（aaa）|/dev|APIGateway1|dev|APItest.customdomain.com/dev/aaa|
+
+</span>
+
+
+# 具体例2
+## 複数API Gatewayで同じドメインを利用したい場合
+A社がECサイトを運営していて、注文用APIと検索用APIを別チームで運用しているため、API Gatewayが2つある。
+マイクロサービスを意識したアーキテクチャを採用している使い方。
+
+<span style="font-size:24px">
+
+|対象API|パス|API|ステージ|アクセスURL|
+|:--|:--|:--|:--|:--|
+|注文用API（order）|/order|APIGateway1|prd|API.customdomain.com/order|
+|検索用API（search）|/search|APIGateway2|prd|API.customdomain.com/search|
+
+</span>
+
+この場合、本番用と検証用のカスタムドメインを切り替える。
+（TestAPI.customdomain.com/searchなど）
