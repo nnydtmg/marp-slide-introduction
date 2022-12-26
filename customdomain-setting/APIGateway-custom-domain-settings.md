@@ -21,21 +21,25 @@ headingDivider: 1
 1. 目標
 2. 前提
 3. カスタムドメイン設定
-4. APIマッピング
-5. CloudFront（Route53）設定
+4. CloudFront（Route53）設定
+5. APIマッピング
 
 # 目標
 ## 独自ドメインを利用して、複数APIGatewayへのルーティングを設定したい
 
 # 前提
 * APIGatewayが2つ構築済
-  * APIGateway1 (execute-api.***APIGateway1***.amazonaws.com/)
-    * aaaステージ (execute-api.***APIGateway1***.amazonaws.com/***aaa***)
-    * bbbパス (execute-api.***APIGateway1***.amazonaws.com/***aaa/bbb***)
+  * APIGateway1 (***APIGateway1***.execute-api.ap-northeast-1.amazonaws.com/)
+    * aaaステージ
+      <span style="font-size:24px">(***APIGateway1***.execute-api.ap-northeast-1.amazonaws.com/***aaa***)</span>
+    * bbbパス
+      <span style="font-size:24px">(***APIGateway1***.execute-api.ap-northeast-1.amazonaws.com/***aaa/bbb***)</span>
 
-  * APIGateway2 (execute-api.***APIGateway2***.amazonaws.com/)
-    * AAAステージ (execute-api.***APIGateway2***.amazonaws.com/***AAA***)
-    * BBBパス (execute-api.***APIGateway2***.amazonaws.com/***AAA/BBB***)
+  * APIGateway2 (***APIGateway2***.execute-api.ap-northeast-1.amazonaws.com/)
+    * AAAステージ
+      <span style="font-size:24px">(***APIGateway2***.execute-api.ap-northeast-1.amazonaws.com/***AAA***)</span>
+    * BBBパス
+      <span style="font-size:24px">(***APIGateway2***.execute-api.ap-northeast-1.amazonaws.com/***AAA/BBB***)</span>
 
 
 # 前提
@@ -56,33 +60,16 @@ headingDivider: 1
 これでカスタムドメインの設定は完了。
 **randam.cloudfront.net**のようなAPIGatewayドメイン名が作成されている。
 
-# APIマッピング
-作成したカスタムドメインに各APIのパスをマッピングする。つまり、
-1. どのAPIの
-2. どのステージに（の）
-3. どのパス（オプション）
-
-アクセスさせるかの設定を行う
-<br>
-1. カスタムドメインの「APIマッピングを設定」をクリック
-2. API、ステージ、パス（オプション）の各設定値を埋める
-
-# APIマッピング
-各設定値について
-* API：関連付ける対象のAPI
-  * （ex:APIGateway1）
-* ステージ：そのAPIのどのステージにマッピングするのか
-  * （ex:aaa、AAA）
-* パス（オプション）：どのパスにアクセスした場合、設定したステージにルーティングするか
-  * （ex:APItest.customdomain.com/aaaをaaaにルーティングしたい場合、ステージにaaa、パスに/aaaを設定）
-
 
 # CloudFront（Route53）設定
 ここまでで、APIGatewayに対してのカスタムドメイン名の設定は完了。
-**しかし**、カスタムドメインとエンドポイントの紐付けが出来ていないため、まだカスタムドメイン（**APItest.customdomain.com**）でアクセスする事は出来ない。
+
+**しかし**、カスタムドメインとエンドポイントの紐付けが出来ていないため、
+まだカスタムドメイン（**APItest.customdomain.com**）でアクセスする事は出来ない。
+
 **randam.cloudfront.net**と**APItest.customdomain.com**を紐付ける必要がある。
 
-Route53のサービス画面で、「ホストゾーン」から**customdomain.com**を選択して、レコードの作成を行う。
+Route53のサービス画面で、「ホストゾーン」から **customdomain.com** を選択して、レコードの作成を行う。
 
 
 # CloudFront（Route53）設定
@@ -96,3 +83,47 @@ Route53のサービス画面で、「ホストゾーン」から**customdomain.c
 
 
 正常に作成されれば完了
+
+
+# APIマッピング
+作成したカスタムドメインに各APIのパスをマッピングする。つまり、
+1. どのAPIの
+2. どのステージ（の）
+3. どのパス（オプション）
+
+に、アクセスさせるかの設定を行う
+<br>
+1. カスタムドメインの「APIマッピングを設定」をクリック
+2. API、ステージ、パス（オプション）の各設定値を埋める
+
+
+# APIマッピング
+各設定値について
+* API：関連付ける対象のAPI
+  * （ex:APIGateway1）
+* ステージ：そのAPIのどのステージにマッピングするのか
+  * （ex:aaa、AAA）
+* パス（オプション）：どのパスにアクセスした場合、設定したステージにルーティングするか
+  * （ex:APItest.customdomain.com/testをaaaにルーティングしたい場合、ステージにaaa、パスに/testを設定）
+
+
+# APIマッピング
+マッピング設定の例
+
+<span style="font-size:24px">
+
+|対象API|パス|API|ステージ|アクセスURL|
+|:--|:--|:--|:--|:--|
+|aaa|/dev|APIGateway1|aaa|APItest.customdomain.com/dev|
+|bbb|/dev|APIGateway1|aaa|APItest.customdomain.com/dev/bbb|
+|AAA|/prd|APIGateway2|AAA|APItest.customdomain.com/prd|
+|BBB|/prd|APIGateway2|AAA|APItest.customdomain.com/prd/BBB|
+
+
+APIGateway1にxxxステージを追加してbbbのAPIをテストしたい場合、
+|対象API|パス|API|ステージ|アクセスURL|
+|:--|:--|:--|:--|:--|
+|bbb|/test|APIGateway1|xxx|APItest.customdomain.com/test/bbb|
+
+で別APIとして検証（バージョンアップ）することも可能。
+</span>
