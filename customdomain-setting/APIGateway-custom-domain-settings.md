@@ -159,8 +159,8 @@ A社がECサイトを運営していて、注文用APIと検索用APIを別チ�
 
 |対象API|パス|API|ステージ|アクセスURL|
 |:--|:--|:--|:--|:--|
-|注文用API（order）|/order|APIGateway1|prd|API.customdomain.com/order|
-|検索用API（search）|/search|APIGateway2|prd|API.customdomain.com/search|
+|注文用API（order/aaa）|/order|APIGateway1|prd|API.customdomain.com/order/aaa|
+|検索用API（search/bbb）|/search|APIGateway2|prd|API.customdomain.com/search/bbb|
 
 </span>
 
